@@ -183,11 +183,10 @@ namespace ComicBookLibraryManagerWebApp.Controllers
             if (ModelState.IsValidField("ComicBook.SeriesId") &&
                 ModelState.IsValidField("ComicBook.IssueNumber"))
             {
-                var comicBookExists = _context.ComicBooks
-                    .Where(cb => cb.SeriesId == comicBook.SeriesId && cb.IssueNumber == comicBook.IssueNumber)
-                    .SingleOrDefault();
-
-                if (comicBookExists != null)
+                if (_context.ComicBooks
+                    .Any(cb => cb.Id != comicBook.Id &&
+                    cb.SeriesId == comicBook.SeriesId &&
+                    cb.IssueNumber == comicBook.IssueNumber))
                 {
                     ModelState.AddModelError("ComicBook.IssueNumber",
                         "The provided Issue Number has already been entered for the selected Series.");
