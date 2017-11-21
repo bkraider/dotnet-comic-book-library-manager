@@ -67,7 +67,6 @@ namespace ComicBookLibraryManagerWebApp.Controllers
         {
             var viewModel = new ComicBooksAddViewModel();
 
-            // TODO Pass the Context class to the view model "Init" method.
             viewModel.Init(_context);
 
             return View(viewModel);
@@ -91,7 +90,6 @@ namespace ComicBookLibraryManagerWebApp.Controllers
                 return RedirectToAction("Detail", new { id = comicBook.Id });
             }
 
-            // TODO Pass the Context class to the view model "Init" method.
             viewModel.Init(_context);
 
             return View(viewModel);
@@ -105,7 +103,6 @@ namespace ComicBookLibraryManagerWebApp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            // TODO Get the comic book.
             var comicBook = _context.ComicBooks
                 .Where(cb => cb.Id == id)
                 .SingleOrDefault();
@@ -182,18 +179,20 @@ namespace ComicBookLibraryManagerWebApp.Controllers
         /// <param name="comicBook">The comic book to validate.</param>
         private void ValidateComicBook(ComicBook comicBook)
         {
-            //// If there aren't any "SeriesId" and "IssueNumber" field validation errors...
-            //if (ModelState.IsValidField("ComicBook.SeriesId") &&
-            //    ModelState.IsValidField("ComicBook.IssueNumber"))
-            //{
-            //    // Then make sure that the provided issue number is unique for the provided series.
-            //    // TODO Call method to check if the issue number is available for this comic book.
-            //    if (false)
-            //    {
-            //        ModelState.AddModelError("ComicBook.IssueNumber",
-            //            "The provided Issue Number has already been entered for the selected Series.");
-            //    }
-            //}
+            // If there aren't any "SeriesId" and "IssueNumber" field validation errors...
+            if (ModelState.IsValidField("ComicBook.SeriesId") &&
+                ModelState.IsValidField("ComicBook.IssueNumber"))
+            {
+                var comicBookExists = _context.ComicBooks
+                    .Where(cb => cb.SeriesId == comicBook.SeriesId && cb.IssueNumber == comicBook.IssueNumber)
+                    .SingleOrDefault();
+
+                if (comicBookExists != null)
+                {
+                    ModelState.AddModelError("ComicBook.IssueNumber",
+                        "The provided Issue Number has already been entered for the selected Series.");
+                }
+            }
         }
 
 
